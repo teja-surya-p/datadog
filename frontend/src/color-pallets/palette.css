@@ -1,0 +1,57 @@
+:root {
+  --ink: #1b1f24;
+  --ink-soft: #49515c;
+  --mist: #f7f2e8;
+  --fog: #f0e7da;
+  --stone: #d5c5b4;
+  --latte: #f4ead8;
+  --cloud: #fff8ec;
+  --ocean: #1e6f78;
+  --ocean-dark: #185860;
+  --amber: #f5b66d;
+  --coral: #f07b6a;
+  --leaf: #7fb7a0;
+  --sky: #a7d3e6;
+  --shadow: rgba(27, 31, 36, 0.08);
+  --shadow-strong: rgba(27, 31, 36, 0.14);
+  --glass: rgba(255, 248, 236, 0.78);
+  --surface: rgba(255, 255, 255, 0.76);
+  --surface-strong: rgba(255, 255, 255, 0.94);
+  --surface-muted: rgba(255, 255, 255, 0.56);
+  --surface-contrast: #ffffff;
+  --outline: rgba(27, 31, 36, 0.12);
+  --drop-zone: rgba(255, 248, 236, 0.85);
+  --page-bg: radial-gradient(circle at 10% 20%, rgba(245, 182, 109, 0.28), transparent 55%),
+    radial-gradient(circle at 80% 0%, rgba(127, 183, 160, 0.25), transparent 50%),
+    radial-gradient(circle at 30% 80%, rgba(167, 211, 230, 0.3), transparent 60%),
+    linear-gradient(140deg, #fffaf1 0%, #f4ead8 55%, #eef6f3 100%);
+}
+
+:root[data-theme='dark'] {
+  --ink: #f3efe8;
+  --ink-soft: #c4cbd4;
+  --mist: #262c33;
+  --fog: #1f252c;
+  --stone: #45505a;
+  --latte: #1b2127;
+  --cloud: #1c2228;
+  --ocean: #63c1bb;
+  --ocean-dark: #4ba7a2;
+  --amber: #f2b46d;
+  --coral: #f08c7e;
+  --leaf: #7ac2aa;
+  --sky: #7fbad9;
+  --shadow: rgba(0, 0, 0, 0.35);
+  --shadow-strong: rgba(0, 0, 0, 0.6);
+  --glass: rgba(26, 32, 38, 0.7);
+  --surface: rgba(26, 32, 38, 0.8);
+  --surface-strong: rgba(32, 38, 46, 0.95);
+  --surface-muted: rgba(26, 32, 38, 0.55);
+  --surface-contrast: #232a32;
+  --outline: rgba(255, 255, 255, 0.14);
+  --drop-zone: rgba(12, 16, 20, 0.92);
+  --page-bg: radial-gradient(circle at 10% 20%, rgba(95, 189, 183, 0.2), transparent 60%),
+    radial-gradient(circle at 80% 0%, rgba(240, 140, 126, 0.22), transparent 55%),
+    radial-gradient(circle at 30% 80%, rgba(127, 186, 217, 0.22), transparent 60%),
+    linear-gradient(140deg, #14181d 0%, #1b2229 55%, #202a30 100%);
+}

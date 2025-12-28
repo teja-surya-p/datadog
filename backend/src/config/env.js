@@ -7,21 +7,35 @@ const toNumber = (value, fallback) => {
   return Number.isNaN(parsed) ? fallback : parsed;
 };
 
+const toBoolean = (value, fallback = false) => {
+  if (value === undefined || value === null) {
+    return fallback;
+  }
+  const normalized = String(value).trim().toLowerCase();
+  if (['1', 'true', 'yes', 'y', 'on'].includes(normalized)) {
+    return true;
+  }
+  if (['0', 'false', 'no', 'n', 'off'].includes(normalized)) {
+    return false;
+  }
+  return fallback;
+};
+
 export const env = {
   port: toNumber(process.env.PORT, 5050),
   corsOrigins: (process.env.CORS_ORIGINS || '')
     .split(',')
     .map((origin) => origin.trim())
     .filter(Boolean),
+  disableFirebase:
+    toBoolean(process.env.DISABLE_FIREBASE, false) ||
+    (Boolean(process.env.FIREBASE_PRIVATE_KEY) &&
+      !String(process.env.FIREBASE_PRIVATE_KEY).includes('BEGIN PRIVATE KEY')),
   llmProvider: (process.env.LLM_PROVIDER || 'gemini').trim().toLowerCase(),
   geminiApiKey: process.env.GEMINI_API_KEY,
   geminiModel: process.env.GEMINI_MODEL || 'gemini-1.5-flash',
   geminiTemperature: toNumber(process.env.GEMINI_TEMPERATURE, 0.4),
   geminiMaxOutputTokens: toNumber(process.env.GEMINI_MAX_OUTPUT_TOKENS, 800),
-  ollamaBaseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
-  ollamaModel: process.env.OLLAMA_MODEL || 'gemma:7b',
-  ollamaTemperature: toNumber(process.env.OLLAMA_TEMPERATURE, 0.4),
-  ollamaNumPredict: toNumber(process.env.OLLAMA_NUM_PREDICT, 800),
   systemPrompt:
     process.env.SYSTEM_PROMPT ||
     'You are Orbit AI, a concise, helpful assistant that responds in clear steps.',

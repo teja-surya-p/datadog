@@ -7,6 +7,12 @@ import feedbackRouter from './routes/feedback.js';
 
 const app = express();
 
+app.use((req, res, next) => {
+  // eslint-disable-next-line no-console
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
+  next();
+});
+
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -38,6 +44,17 @@ app.use((req, res) => {
 app.use((error, req, res, next) => {
   const status = error.status || 500;
   const message = error.message || 'Unexpected error';
+  // eslint-disable-next-line no-console
+  console.error('Request failed', {
+    method: req.method,
+    path: req.originalUrl,
+    status,
+    message,
+    code: error?.code,
+    details: error?.details,
+  });
+  // eslint-disable-next-line no-console
+  console.error(error?.stack || error);
   res.status(status).json({ error: message });
 });
 

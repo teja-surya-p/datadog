@@ -1,6 +1,6 @@
 import express from 'express';
 import { addMessage, createChat, listChats, listMessages, updateChatMeta } from '../services/firestore.js';
-import { generateChatResponse } from '../services/llm.js';
+import { runGuardedChat } from '../services/guardrails.js';
 
 const router = express.Router();
 
@@ -48,13 +48,28 @@ router.post('/:chatId/messages', async (req, res, next) => {
     const content = typeof req.body.content === 'string' ? req.body.content.trim() : '';
     const attachments = Array.isArray(req.body.attachments) ? req.body.attachments : [];
 
+    // eslint-disable-next-line no-console
+    console.log('[chats] POST message', {
+      chatId,
+      uid: req.user?.uid,
+      hasContent: Boolean(content),
+      attachments: attachments.length,
+    });
+
     if (!content && attachments.length === 0) {
       return res.status(400).json({ error: 'Message content or attachments required' });
     }
 
+    // eslint-disable-next-line no-console
+    console.log('[chats] Loading prior messages...');
     const priorMessages = await listMessages(chatId, req.user.uid, { limit: 12, order: 'desc' });
     const history = buildHistory(priorMessages.reverse());
 
+    // eslint-disable-next-line no-console
+    console.log('[chats] Prior messages loaded:', priorMessages.length);
+
+    // eslint-disable-next-line no-console
+    console.log('[chats] Persisting user message...');
     const userMessage = await addMessage({
       chatId,
       userId: req.user.uid,
@@ -63,11 +78,18 @@ router.post('/:chatId/messages', async (req, res, next) => {
       attachments,
     });
 
-    const aiResponse = await generateChatResponse({
+    // eslint-disable-next-line no-console
+    console.log('[chats] Generating AI response...');
+    const { response: aiResponse, security } = await runGuardedChat({
       history,
       message: content || 'Summarize the attached files.',
     });
 
+    // eslint-disable-next-line no-console
+    console.log('[chats] AI response generated. Length:', aiResponse?.length || 0);
+
+    // eslint-disable-next-line no-console
+    console.log('[chats] Persisting AI message...');
     const aiMessage = await addMessage({
       chatId,
       userId: req.user.uid,
@@ -84,6 +106,7 @@ router.post('/:chatId/messages', async (req, res, next) => {
       chatId,
       userMessage,
       aiMessage,
+      security,
     });
   } catch (error) {
     next(error);

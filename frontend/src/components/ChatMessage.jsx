@@ -40,9 +40,12 @@ function ThumbsDownIcon() {
   );
 }
 
-export default function ChatMessage({ message, index }) {
+export default function ChatMessage({ message, index, onFeedback, isFeedbackPending = false }) {
   const isAi = message.sender === 'ai';
   const avatarLabel = isAi ? 'AI' : 'ME';
+  const isUpSelected = message.feedback === 'up';
+  const isDownSelected = message.feedback === 'down';
+  const disableFeedback = !onFeedback || isFeedbackPending;
 
   return (
     <div
@@ -67,10 +70,24 @@ export default function ChatMessage({ message, index }) {
           <span className="message-time">{message.time}</span>
           {isAi ? (
             <div className="message-actions">
-              <button className="icon-button" type="button" aria-label="Thumbs up">
+              <button
+                className={`icon-button ${isUpSelected ? 'is-selected' : ''}`}
+                type="button"
+                aria-label="Thumbs up"
+                aria-pressed={isUpSelected}
+                disabled={disableFeedback}
+                onClick={() => onFeedback?.(message.id, 'up')}
+              >
                 <ThumbsUpIcon />
               </button>
-              <button className="icon-button" type="button" aria-label="Thumbs down">
+              <button
+                className={`icon-button ${isDownSelected ? 'is-selected' : ''}`}
+                type="button"
+                aria-label="Thumbs down"
+                aria-pressed={isDownSelected}
+                disabled={disableFeedback}
+                onClick={() => onFeedback?.(message.id, 'down')}
+              >
                 <ThumbsDownIcon />
               </button>
             </div>

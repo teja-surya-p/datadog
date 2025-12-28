@@ -9,7 +9,7 @@ const ensureApiKey = () => {
   }
 };
 
-export const generateChatResponse = async ({ history, message }) => {
+export const generateChatResponse = async ({ history = [], message }) => {
   ensureApiKey();
   const client = new GoogleGenerativeAI(env.geminiApiKey);
   const model = client.getGenerativeModel({
@@ -17,8 +17,13 @@ export const generateChatResponse = async ({ history, message }) => {
     systemInstruction: env.systemPrompt,
   });
 
+  const geminiHistory = history.map((entry) => ({
+    role: entry.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: entry.content }],
+  }));
+
   const chat = model.startChat({
-    history,
+    history: geminiHistory,
     generationConfig: {
       temperature: env.geminiTemperature,
       maxOutputTokens: env.geminiMaxOutputTokens,

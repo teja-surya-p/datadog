@@ -57,10 +57,15 @@ export default function ChatComposer({
   attachedFiles,
   onRemoveFile,
   fileInputRef,
+  isSending = false,
+  error = '',
 }) {
   const handleKeyDown = (event) => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
+      if (isSending) {
+        return;
+      }
       onSend();
     }
   };
@@ -78,7 +83,9 @@ export default function ChatComposer({
         multiple
         className="file-input"
         onChange={handleFileChange}
+        disabled={isSending}
       />
+      {error ? <p className="composer-error">{error}</p> : null}
       {attachedFiles.length ? (
         <div className="attachment-row">
           {attachedFiles.map((file) => (
@@ -89,6 +96,7 @@ export default function ChatComposer({
                 type="button"
                 aria-label={`Remove ${file.name}`}
                 onClick={() => onRemoveFile(file.name)}
+                disabled={isSending}
               >
                 x
               </button>
@@ -103,12 +111,25 @@ export default function ChatComposer({
           onKeyDown={handleKeyDown}
           placeholder="Ask Orbit AI anything. Press Enter to send, Shift + Enter for a new line."
           rows={1}
+          disabled={isSending}
         />
         <div className="composer-actions">
-          <button className="icon-button" type="button" onClick={onAttachClick} aria-label="Upload">
+          <button
+            className="icon-button"
+            type="button"
+            onClick={onAttachClick}
+            aria-label="Upload"
+            disabled={isSending}
+          >
             <UploadIcon />
           </button>
-          <button className="primary-button" type="button" onClick={onSend} aria-label="Send">
+          <button
+            className="primary-button"
+            type="button"
+            onClick={onSend}
+            aria-label="Send"
+            disabled={isSending}
+          >
             <SendIcon />
           </button>
         </div>

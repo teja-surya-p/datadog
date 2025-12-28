@@ -1,6 +1,6 @@
 # Orbit AI Backend
 
-Node + Express API that verifies Firebase ID tokens, stores chats in Firestore, and calls Google Gemini for responses.
+Node + Express API that verifies Firebase ID tokens, stores chats in Firestore, and calls a pluggable LLM provider (Gemini or Ollama) for responses.
 
 ## Setup
 
@@ -18,15 +18,18 @@ cp .env.example .env
 ```
 
 Required variables:
-- `GEMINI_API_KEY` - Google Gemini API key
 - `FIREBASE_PROJECT_ID` - Firebase project ID
 - `FIREBASE_CLIENT_EMAIL` - Service account client email
 - `FIREBASE_PRIVATE_KEY` - Service account private key (use `\n` for new lines)
 
+LLM provider configuration:
+- `LLM_PROVIDER` - `ollama` or `gemini`
+- If using Gemini: `GEMINI_API_KEY`, optional `GEMINI_MODEL`
+- If using Ollama: `OLLAMA_BASE_URL`, `OLLAMA_MODEL`
+
 Optional:
 - `CORS_ORIGINS` - comma-separated list of frontend origins
-- `GEMINI_MODEL` - default: `gemini-1.5-flash`
-- `SYSTEM_PROMPT` - system instruction for Gemini
+- `SYSTEM_PROMPT` - system instruction for the assistant
 
 3) Run the server:
 
@@ -48,7 +51,7 @@ Authorization: Bearer <firebase-id-token>
 - `GET /api/chats` -> list chats for the authenticated user
 - `POST /api/chats` -> create a chat (body: `{ "title": "My chat" }`)
 - `GET /api/chats/:chatId/messages` -> list messages
-- `POST /api/chats/:chatId/messages` -> send a message and receive Gemini reply
+- `POST /api/chats/:chatId/messages` -> send a message and receive an LLM reply
   - body: `{ "content": "...", "attachments": [{ "name": "file.pdf", "size": 1234 }] }`
 - `POST /api/messages/:messageId/feedback` -> record thumbs up/down
   - body: `{ "rating": "up" | "down" }`
@@ -57,3 +60,6 @@ Authorization: Bearer <firebase-id-token>
 
 - Messages and chats are stored in Firestore collections: `chats` and `messages`.
 - Feedback is stored on each message under the `feedback` field.
+- For Ollama, ensure the server is running locally, for example:
+  - `ollama pull gemma:7b`
+  - `ollama run gemma:7b`

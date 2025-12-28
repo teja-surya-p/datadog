@@ -13,10 +13,15 @@ export const env = {
     .split(',')
     .map((origin) => origin.trim())
     .filter(Boolean),
+  llmProvider: (process.env.LLM_PROVIDER || 'gemini').trim().toLowerCase(),
   geminiApiKey: process.env.GEMINI_API_KEY,
   geminiModel: process.env.GEMINI_MODEL || 'gemini-1.5-flash',
   geminiTemperature: toNumber(process.env.GEMINI_TEMPERATURE, 0.4),
   geminiMaxOutputTokens: toNumber(process.env.GEMINI_MAX_OUTPUT_TOKENS, 800),
+  ollamaBaseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
+  ollamaModel: process.env.OLLAMA_MODEL || 'gemma:7b',
+  ollamaTemperature: toNumber(process.env.OLLAMA_TEMPERATURE, 0.4),
+  ollamaNumPredict: toNumber(process.env.OLLAMA_NUM_PREDICT, 800),
   systemPrompt:
     process.env.SYSTEM_PROMPT ||
     'You are Orbit AI, a concise, helpful assistant that responds in clear steps.',

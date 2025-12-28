@@ -1,6 +1,6 @@
 import express from 'express';
 import { addMessage, createChat, listChats, listMessages, updateChatMeta } from '../services/firestore.js';
-import { generateChatResponse } from '../services/gemini.js';
+import { generateChatResponse } from '../services/llm.js';
 
 const router = express.Router();
 
@@ -8,8 +8,8 @@ const buildHistory = (messages) =>
   messages
     .filter((message) => message.content)
     .map((message) => ({
-      role: message.role === 'ai' ? 'model' : 'user',
-      parts: [{ text: message.content }],
+      role: message.role === 'ai' ? 'assistant' : 'user',
+      content: message.content,
     }));
 
 router.get('/', async (req, res, next) => {

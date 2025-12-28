@@ -1,4 +1,5 @@
 import { API_BASE_URL, API_TIMEOUT, JSON_HEADERS } from './apiConstants.js';
+import { auth } from './firebaseClient.js';
 
 const buildUrl = (path) => `${API_BASE_URL}${path}`;
 
@@ -8,9 +9,12 @@ export const apiRequest = async (path, options = {}) => {
   const timeout = setTimeout(() => controller?.abort(), API_TIMEOUT);
 
   try {
+    const token = auth.currentUser ? await auth.currentUser.getIdToken() : null;
+    const authHeader = token ? { Authorization: `Bearer ${token}` } : {};
+
     const response = await fetch(buildUrl(path), {
       method,
-      headers: { ...JSON_HEADERS, ...headers },
+      headers: { ...JSON_HEADERS, ...authHeader, ...headers },
       body: body ? JSON.stringify(body) : undefined,
       signal: signal ?? controller?.signal,
     });
@@ -21,7 +25,7 @@ export const apiRequest = async (path, options = {}) => {
       : await response.text();
 
     if (!response.ok) {
-      const message = typeof data === 'string' ? data : data?.message;
+      const message = typeof data === 'string' ? data : data?.error || data?.message;
       throw new Error(message || 'Request failed');
     }
 
